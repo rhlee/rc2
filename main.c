@@ -18,6 +18,11 @@ main(int argc, char *argv[])
   const int event_strlen = strlen(event_string);
   char inputs[32][32];
 
+  printf("Select input device:\n");
+
+  int fd = -1;
+  char name[256]= "Unknown";
+
   while((node = readdir(input)) != NULL)
   {
     if(strncmp(node->d_name, event_string, event_strlen) != 0)
@@ -26,10 +31,6 @@ main(int argc, char *argv[])
     strncat(inputs[count], dev_input_string, dev_input_strlen);
     strncat(inputs[count], "/", 1);
     strncat(inputs[count], node->d_name, strlen(node->d_name));
-    printf("%s\n", inputs[count]);
-
-    int fd = -1;
-    char name[256]= "Unknown";
 
     if ((fd = open(inputs[count], O_RDONLY)) < 0) {
       perror("evdev open");
@@ -37,8 +38,7 @@ main(int argc, char *argv[])
     }
     if(ioctl(fd, EVIOCGNAME(sizeof(name)), name) < 0)
       perror("evdev ioctl");
-    printf("The device on %s says its name is %s\n",
-	   inputs[count], name);
+    printf("  %d. %s\n", count + 1, name);
 
     close(fd);
     count++;
