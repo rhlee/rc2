@@ -45,5 +45,10 @@ main(int argc, char *argv[])
   }
 
   closedir(input);
+
+  int input_number;
+  printf(" :");
+  scanf("%d", &input_number);
+
   return 0;
 }
