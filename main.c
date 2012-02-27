@@ -1,6 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <dirent.h>
 #include <string.h>
+#include <sys/ioctl.h>
+#include <fcntl.h>
+#include <linux/input.h>
 
 int
 main(int argc, char *argv[])
@@ -23,10 +27,23 @@ main(int argc, char *argv[])
     strncat(inputs[count], "/", 1);
     strncat(inputs[count], node->d_name, strlen(node->d_name));
     printf("%s\n", inputs[count]);
+
+    int fd = -1;
+    char name[256]= "Unknown";
+
+    if ((fd = open(inputs[count], O_RDONLY)) < 0) {
+      perror("evdev open");
+      exit(1);
+    }
+    if(ioctl(fd, EVIOCGNAME(sizeof(name)), name) < 0)
+      perror("evdev ioctl");
+    printf("The device on %s says its name is %s\n",
+	   inputs[count], name);
+
+    close(fd);
     count++;
   }
 
   closedir(input);
-  printf("h");
   return 0;
 }
