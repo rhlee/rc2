@@ -13,10 +13,13 @@
 
 
 void get_input(char *input);
+void keys_down(int key1, int key2);
+void keys_up();
 
 
 int key_code, repetitions = 0;
 Display *display;
+int keys_pressed[2] = {0, 0};
 
 
 int
@@ -56,6 +59,18 @@ main(int argc, char *argv[])
         case 0:
 	  XSync (display, False);
 	  XTestGrabControl (display, False);
+          switch(event[i].code)
+	  {
+            case KEY_NEXTSONG:
+	      printf("forwards\n");
+              break;
+            case KEY_PREVIOUSSONG:
+	      printf("backwards\n");
+              break;
+            default:
+	      perror("unknown key");
+	      return 1;
+          }
           printf("%d up\n", event[i].code);
 	  break;
         case 1:
@@ -120,4 +135,10 @@ get_input(char *input)
 
   input[0] = '\0';
   strncat(input, inputs[input_number - 1], strlen(inputs[input_number - 1]));
+}
+
+
+void keys_down(int key1, int key2)
+{
+  
 }
