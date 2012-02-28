@@ -36,7 +36,22 @@ main(int argc, char *argv[])
     
     for (i = 0; i < (int) (read_bytes / sizeof(struct input_event)); i++) {
       fflush(stdout);
-      printf("x");
+      if(event[i].type != EV_KEY) continue;
+      //printf("%d\n", event[i].value);
+      switch(event[i].value)
+      {
+        case 0:
+          printf("%d up\n", event[i].code);
+	  break;
+        case 1:
+          printf("%d down\n", event[i].code);
+	  break;
+        case 2:
+          printf("%d held\n", event[i].code);
+	  break;
+        default:
+    	  perror("Unknown event value");
+      }
     }
   }
 
