@@ -6,8 +6,17 @@
 #include <fcntl.h>
 #include <linux/input.h>
 
+#include <X11/Xlib.h>
+#include <X11/Intrinsic.h>
+#include <X11/extensions/XTest.h>
+#include <unistd.h>
+
 
 void get_input(char *input);
+
+
+int key_code, repetitions = 0;
+Display *display;
 
 
 int
@@ -23,9 +32,13 @@ main(int argc, char *argv[])
     return 1;
   }
 
+
   struct input_event event[64];
   size_t read_bytes;
   int i;
+
+  display = XOpenDisplay (NULL);
+
   while(1)
   {
     read_bytes = read(file, event, sizeof(event));
@@ -41,9 +54,12 @@ main(int argc, char *argv[])
       switch(event[i].value)
       {
         case 0:
+	  XSync (display, False);
+	  XTestGrabControl (display, False);
           printf("%d up\n", event[i].code);
 	  break;
         case 1:
+          XTestGrabControl (display, True);
           printf("%d down\n", event[i].code);
 	  break;
         case 2:
