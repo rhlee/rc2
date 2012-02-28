@@ -51,18 +51,22 @@ main(int argc, char *argv[])
     }
     
     for (i = 0; i < (int) (read_bytes / sizeof(struct input_event)); i++) {
-      fflush(stdout);
       if(event[i].type != EV_KEY) continue;
-      //printf("%d\n", event[i].value);
       switch(event[i].value)
       {
         case 0:
+	  keys_up();
+          XTestGrabControl (display, True);
+          printf("%d down\n", event[i].code);
+	  break;
+        case 1:
 	  XSync (display, False);
 	  XTestGrabControl (display, False);
           switch(event[i].code)
 	  {
             case KEY_NEXTSONG:
 	      printf("forwards\n");
+	      keys_down(XK_F, XK_W);
               break;
             case KEY_PREVIOUSSONG:
 	      printf("backwards\n");
@@ -71,11 +75,6 @@ main(int argc, char *argv[])
 	      perror("unknown key");
 	      return 1;
           }
-          printf("%d up\n", event[i].code);
-	  break;
-        case 1:
-          XTestGrabControl (display, True);
-          printf("%d down\n", event[i].code);
 	  break;
         case 2:
           printf("%d held\n", event[i].code);
@@ -137,8 +136,34 @@ get_input(char *input)
   strncat(input, inputs[input_number - 1], strlen(inputs[input_number - 1]));
 }
 
-
 void keys_down(int key1, int key2)
 {
+  printf("f1\n");
+  fflush(stdout);
+  keys_pressed[0] = XKeysymToKeycode(display, key1);
+  XTestFakeKeyEvent (display, keys_pressed[0], True, 0);
+  if(key2 != 0)
+  {
+    keys_pressed[1] = XKeysymToKeycode(display, key2);
+    if(keys_pressed[1] == 0)
+    {
+      perror("Unknown key code");
+      exit(1);
+    }
+    XTestFakeKeyEvent (display, keys_pressed[1], True, 0);
+  }
+  XSync(display, False);
   
+}
+
+void keys_up()
+{
+  XTestFakeKeyEvent (display, keys_pressed[0], False, 0);
+  keys_pressed[0] = 0;
+  if(keys_pressed[1] != 0)
+  {
+    XTestFakeKeyEvent (display, keys_pressed[1], False, 0);
+    keys_pressed[1] = 0;
+  }
+  XSync(display, False);
 }
