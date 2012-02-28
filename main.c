@@ -6,8 +6,21 @@
 #include <fcntl.h>
 #include <linux/input.h>
 
+
+void get_input(char *input);
+
+
 int
 main(int argc, char *argv[])
+{
+  char input[32];
+  get_input(input);
+  printf("%s", input);
+  return 0;
+}
+
+void
+get_input(char *input)
 {
   struct dirent *node;
   const char *dev_input_string = "/dev/input";
@@ -50,5 +63,6 @@ main(int argc, char *argv[])
   printf(" :");
   scanf("%d", &input_number);
 
-  return 0;
+  input[0] = '\0';
+  strncat(input, inputs[input_number - 1], strlen(inputs[input_number - 1]));
 }
