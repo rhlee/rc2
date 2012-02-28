@@ -13,9 +13,33 @@ void get_input(char *input);
 int
 main(int argc, char *argv[])
 {
-  char input[32];
-  get_input(input);
-  printf("%s", input);
+  char input_path[32];
+  get_input(input_path);
+
+  int file;
+  if ((file = open(input_path, O_RDONLY)) < 0)
+  {
+    perror("Couldn't open input device");
+    return 1;
+  }
+
+  struct input_event event[64];
+  size_t read_bytes;
+  int i;
+  while(1)
+  {
+    read_bytes = read(file, event, sizeof(event));
+    if (read_bytes < (int) sizeof(struct input_event)) {
+      perror("short read");
+      return 1;
+    }
+    
+    for (i = 0; i < (int) (read_bytes / sizeof(struct input_event)); i++) {
+      fflush(stdout);
+      printf("x");
+    }
+  }
+
   return 0;
 }
 
