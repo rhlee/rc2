@@ -12,7 +12,7 @@ main(int argc, char *argv[])
   struct dirent *node;
   const char *dev_input_string = "/dev/input";
   const int dev_input_strlen = strlen(dev_input_string);
-  DIR *input = opendir(dev_input_string);
+  DIR *input_dir = opendir(dev_input_string);
   int count = 0;
   const char *event_string = "event";
   const int event_strlen = strlen(event_string);
@@ -23,7 +23,7 @@ main(int argc, char *argv[])
   int fd = -1;
   char name[256]= "Unknown";
 
-  while((node = readdir(input)) != NULL)
+  while((node = readdir(input_dir)) != NULL)
   {
     if(strncmp(node->d_name, event_string, event_strlen) != 0)
       continue;
@@ -44,7 +44,7 @@ main(int argc, char *argv[])
     count++;
   }
 
-  closedir(input);
+  closedir(input_dir);
 
   int input_number;
   printf(" :");
